@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+{% load cart_filters %}
+<style>
+    /* General Styles */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+    }
+    
+    .details-page-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        background-color: #f4f4f4;
+    }
+    
+    .details-content-container {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 1000px;
+        box-sizing: border-box;
+    }
+    
+    h1 {
+        text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .order-info {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+    
+    .order-info h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .order-info p {
+        font-size: 0.9em;
+        margin: 3px 0;
+        color: #666;
+    }
+    
+    .order-products-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .order-products-table th,
+    .order-products-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        font-size: 0.85em;
+    }
+    
+    .order-products-table th {
+        background-color: #f7f7f7;
+        color: #555;
+        font-weight: bold;
+    }
+    
+    .order-products-table td {
+        vertical-align: middle;
+    }
+    
+    .product-name {
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .product-price,
+    .product-total {
+        color: #333;
+        font-weight: bold;
+    }
+    
+    .product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .total-price {
+        font-size: 1em;
+        text-align: right;
+        color: #333;
+        margin-top: 10px;
+    }
+    
+    .back-button {
+        background-color: #39b39f;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 0.9em;
+    }
+    
+    .back-button:hover {
+        background-color: #39b39f;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .order-info p {
+            font-size: 0.8em;
+        }
+    
+        .order-products-table th,
+        .order-products-table td {
+            padding: 6px;
+        }
+    
+        .order-products-table td {
+            font-size: 0.75em;
+        }
+    
+        .details-content-container {
+            padding: 10px;
+        }
+    
+        .back-button {
+            font-size: 0.8em;
+            padding: 6px 12px;
+        }
+    }
+
+</style>
+
+<div class="details-page-container">
+    <div class="details-content-container">
+        <h1>Order Details</h1>
+
+        <!-- Order Information -->
+        <div class="order-info">
+            <h2>Order Information</h2>
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Full Name:</strong> {{ order.full_name }}</p>
+            <p><strong>Created At:</strong> {{ order.created_at }}</p>
+            <p><strong>Total Price:</strong> ₹{{ order.total_price|floatformat:2 }}</p>
+            <p><strong>Address:</strong> {{ order.address }}</p>
+            <p><strong>City:</strong> {{ order.city }}</p>
+            <p><strong>State:</strong> {{ order.state }}</p>
+            <p><strong>Zip Code:</strong> {{ order.zip_code }}</p>
+            <p><strong>Phone:</strong> {{ order.phone }}</p>
+            <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+        </div>
+
+        <!-- Products Table -->
+<!-- Products Table -->
+<table class="order-products-table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+        <tr>
+            <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image"></td>
+            <td class="product-name">{{ item.product.name }}</td>
+            <td class="product-price">₹{{ item.price|floatformat:2 }}</td>
+            <td>{{ item.quantity }}</td>
+            <td class="product-total">₹{{ item.price|multiply:item.quantity|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4" class="total-price"><strong>Total Price:</strong></td>
+            <td class="total-price">₹{{ order.total_price|floatformat:2 }}</td>
+        </tr>
+    </tfoot>
+</table>
+
+
+        <!-- Back Button -->
+        <a href="{% url 'user_orders' %}">
+            <button class="back-button">Back to Orders</button>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

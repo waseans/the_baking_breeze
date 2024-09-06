@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+{% load cart_filters %}
+
+<style>
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.orders-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.orders-content-container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.order-section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-header h2 {
+    font-size: 1em;
+    color: #333;
+    margin: 0;
+}
+
+.order-header .order-status {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #555;
+}
+
+.order-date {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.order-products-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.order-products-table th,
+.order-products-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9em;
+}
+
+.order-products-table th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-weight: bold;
+}
+
+.order-products-table td {
+    vertical-align: middle;
+}
+
+.product-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.product-price,
+.product-total {
+    color: #555;
+    font-weight: bold;
+}
+
+.product-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.total-price {
+    font-size: 1em;
+    text-align: right;
+    color: #333;
+    margin-top: 10px;
+}
+
+.view-details-button {
+    background-color: #555;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.8em;
+}
+
+.view-details-button:hover {
+    background-color: #444;
+}
+
+.no-orders {
+    text-align: center;
+    font-size: 1em;
+    color: #666;
+    margin-top: 50px;
+}
+
+.back-to-home-button {
+    background-color: #39b39f;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.back-to-home-button:hover {
+    background-color: #C0ded9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .orders-content-container {
+        padding: 10px;
+    }
+
+    .order-header h2 {
+        font-size: 0.9em;
+    }
+
+    .order-header .order-status {
+        font-size: 0.8em;
+    }
+
+    .order-date {
+        font-size: 0.7em;
+    }
+
+    .order-products-table th,
+    .order-products-table td {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
+    .product-image {
+        width: 40px;
+        height: 40px;
+    }
+
+    .total-price {
+        font-size: 0.9em;
+    }
+
+    .view-details-button {
+        font-size: 0.7em;
+        padding: 6px 10px;
+    }
+
+    .back-to-home-button {
+        font-size: 0.8em;
+        padding: 6px 10px;
+    }
+}
+</style>
+
+<div class="orders-page-container">
+    <div class="orders-content-container">
+        <a href="{% url 'home' %}" class="back-to-home-button">Back to Home</a>
+        <h1>Your Orders</h1>
+
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-section">
+                <div class="order-header">
+                    <div>
+                        <h2>Order ID: {{ order.id }}</h2>
+                        <p class="order-date">Ordered on: {{ order.created_at|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                    <span class="order-status">{{ order.get_status_display }}</span>
+                </div>
+
+                <table class="order-products-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td class="product-name">{{ item.product.name }}</td>
+                            <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image"></td>
+                            <td class="product-price">₹{{ item.price|floatformat:2 }}</td>
+                            <td class="product-quantity">{{ item.quantity }}</td>
+                            <td class="product-total">₹{{ item.price|multiply:item.quantity|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="total-price">
+                    Total Price: ₹{{ order.total_price|floatformat:2 }}
+                </div>
+
+                <!-- View Full Details Button -->
+                <a href="{% url 'order_details_full' order.id %}" class="view-details-button">View Full Details</a>
+                
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="no-orders">
+            <p>You have no orders yet.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

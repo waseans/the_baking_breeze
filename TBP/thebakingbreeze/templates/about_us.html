@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% block title %}About Us - The Baking Breeze{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about_us.css' %}">
+{% endblock %}
+
+{% block content %}
+<style>
+    /* About Us Page Styles */
+.about-us {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #C0ded9; /* Matches the theme */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.about-us-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.about-us-header h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.about-us-header p {
+    font-size: 18px;
+    color: #666;
+}
+
+.our-story,
+.our-mission,
+.our-milestones,
+.contact-us {
+    margin-bottom: 40px;
+}
+
+.our-story h2,
+.our-mission h2,
+.our-milestones h2,
+.contact-us h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #191919;
+}
+
+.our-story p,
+.our-mission p,
+.our-milestones ul,
+.contact-us p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.about-image {
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.our-milestones ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.our-milestones li {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.our-milestones li::before {
+    content: "✔️";
+    position: absolute;
+    left: 0;
+    color: #e89b00;
+}
+
+.contact-us a {
+    color: #f4b400;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-us a:hover {
+    color: #e89b00;
+}
+
+.contact-us p {
+    font-size: 16px;
+}
+
+.contact-us h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #191919;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .about-us-header h1 {
+        font-size: 28px;
+    }
+
+    .about-us-header p {
+        font-size: 16px;
+    }
+
+    .our-story h2,
+    .our-mission h2,
+    .our-milestones h2,
+    .contact-us h2 {
+        font-size: 24px;
+    }
+
+    .our-story p,
+    .our-mission p,
+    .our-milestones ul,
+    .contact-us p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-us {
+        padding: 20px 10px;
+    }
+
+    .about-us-header h1 {
+        font-size: 24px;
+    }
+
+    .about-us-header p {
+        font-size: 14px;
+    }
+
+    .our-story h2,
+    .our-mission h2,
+    .our-milestones h2,
+    .contact-us h2 {
+        font-size: 20px;
+    }
+
+    .our-story p,
+    .our-mission p,
+    .our-milestones ul,
+    .contact-us p {
+        font-size: 14px;
+    }
+
+    .about-image {
+        margin: 15px 0;
+    }
+}
+
+</style>
+<section class="about-us">
+    <div class="about-us-header">
+        <h1>About Us</h1>
+        <p>Learn more about The Baking Breeze and our journey.</p>
+    </div>
+    
+    <!-- Our Story -->
+    <section class="our-story">
+        <h2>Our Story</h2>
+        <p>At The Baking Breeze, we are passionate about delivering freshly baked goods and high-quality products to our customers. Founded in 2020, our journey started with a small bakery and has since grown into a beloved brand known for its commitment to excellence and customer satisfaction.</p>
+        <img src="{% static 'images/Transparent Logo.png' %}" alt="Our Story" class="about-image">
+    </section>
+
+    <!-- Our Mission -->
+    <section class="our-mission">
+        <h2>Our Mission</h2>
+        <p>Our mission is to create delightful experiences through our products. We aim to bring a touch of warmth and joy to your everyday life with our meticulously crafted baked goods and exceptional customer service.</p>
+    </section>
+
+    <!-- Meet the Team -->
+
+    <!-- Our Milestones -->
+    <section class="our-milestones">
+        <h2>Our Milestones</h2>
+        <ul>
+            <li>2020: Launched our first bakery</li>
+            <li>2021: Expanded to include a range of specialty products</li>
+            <li>2022: Opened our online store for nationwide delivery</li>
+            <li>2023: Celebrated 3 years of success and customer satisfaction</li>
+        </ul>
+    </section>
+
+    <!-- Contact Us -->
+    <section class="contact-us">
+        <h2>Contact Us</h2>
+        <p>If you have any questions or feedback, feel free to reach out to us. We would love to hear from you!</p>
+        <p>Email: <a href="mailto:info@thebakingbreeze.com">info@thebakingbreeze.com</a></p>
+        <p>Phone: +1 234 567 890</p>
+        <p>Address: 123 Baker Street, City, Country</p>
+    </section>
+</section>
+{% endblock %}

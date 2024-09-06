@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="confirmation-page">
+    <div class="confirmation-content">
+        <h1>Order Placed Successfully!</h1>
+        <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+        <div class="button-group">
+            <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
+            <a href="{% url 'user_orders' %}" class="btn btn-secondary">View My Orders</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.confirmation-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.confirmation-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.confirmation-content h1 {
+    font-size: 2em;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.confirmation-content p {
+    font-size: 1em;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.button-group .btn {
+    padding: 12px 18px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: inline-block;
+}
+
+.button-group .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.button-group .btn-primary:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.button-group .btn-secondary {
+    background-color: #2196F3;
+    color: white;
+}
+
+.button-group .btn-secondary:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .confirmation-content {
+        padding: 20px;
+    }
+
+    .confirmation-content h1 {
+        font-size: 1.8em;
+    }
+
+    .confirmation-content p {
+        font-size: 0.9em;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .button-group .btn {
+        width: 100%;
+        padding: 10px;
+    }
+}
+</style>
+{% endblock %}

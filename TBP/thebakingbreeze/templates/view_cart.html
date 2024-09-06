@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load cart_filters %}
+{% load static %}
+<style>
+/* General Styles */
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #feecec;
+}
+
+.cart-page-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #feecec;
+    padding: 20px;
+    position: relative;
+}
+
+.cart-content-container {
+    background-color: white !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.back-to-home-btn {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    background-color: #C0ded9;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.back-to-home-btn:hover {
+    background-color: #a4d8c8;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+    max-height: 100px;
+}
+
+/* Table Styles */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-table th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-weight: bold;
+}
+
+.cart-table td {
+    vertical-align: middle;
+}
+
+.product-name {
+    font-weight: bold;
+    color: #666;
+}
+
+.product-price,
+.product-total {
+    color: #666;
+    font-weight: bold;
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.remove-item-btn {
+    background-color: #666;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.remove-item-btn:hover {
+    background-color: #666;
+}
+
+.empty-cart {
+    text-align: center;
+    font-size: 1.2em;
+    color: #999;
+}
+
+/* Centering the Checkout Button */
+.checkout-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.checkout-btn {
+    padding: 15px;
+    background-color: #C0ded9;
+    color: black;
+    font-size: 1.2em;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.checkout-btn:hover {
+    background-color: #a4d8c8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cart-table {
+        font-size: 0.9em; /* Reduce text size */
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 10px; /* Reduce padding */
+    }
+
+    .cart-table td {
+        font-size: 0.85em; /* Reduce text size further for td */
+    }
+
+    .logo img {
+        max-height: 80px; /* Adjust logo size */
+    }
+
+    .checkout-btn {
+        font-size: 1em; /* Adjust button font size */
+        padding: 12px; /* Adjust button padding */
+    }
+
+    .back-to-home-btn {
+        font-size: 0.9em; /* Adjust button font size */
+        padding: 8px 16px; /* Adjust button padding */
+    }
+    .cart-content-container {
+    padding: 0px !important;
+    width: 100%;
+}
+.cart-page-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #feecec;
+    padding: 0px;
+}
+}
+
+
+</style>
+
+<div class="cart-page-container">
+    <div class="cart-content-container">
+        <button class="back-to-home-btn" onclick="history.back()">Back</button>
+
+        <h1>My Cart</h1>
+        <div class="logo">
+            <img src="{% static 'images/Transparent Logo.png' %}" alt="The Baking Breeze Logo">
+        </div>
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr data-cart-item-id="{{ item.id }}">
+                    <td class="product-name">{{ item.product.name }}</td>
+                    <td class="product-price">₹{{ item.product.price|floatformat:2 }}</td>
+                    <td class="product-quantity">
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="quantity-input" data-cart-item-id="{{ item.id }}">
+                    </td>
+                    <td class="product-total" id="total-{{ item.id }}">₹{{ item.product.price|multiply:item.quantity|floatformat:2 }}</td>
+                    <td class="product-action">
+                        <button class="remove-item-btn" data-cart-item-id="{{ item.id }}">Remove</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-cart">Your cart is empty.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                    <td id="final-total" class="product-total">₹0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="checkout-btn-container">
+            <button id="checkout-btn" class="checkout-btn">Proceed To Checkout</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Handle quantity input changes
+        $('.quantity-input').on('change', function () {
+            var cartItemId = $(this).data('cart-item-id');
+            var newQuantity = $(this).val();
+            var priceCell = $(this).closest('tr').find('td:nth-child(2)').text();
+            var pricePerUnit = parseFloat(priceCell.replace('₹', ''));
+            var totalCell = $('#total-' + cartItemId);
+
+            if (newQuantity > 0) {
+                // Update cart item quantity via AJAX
+                $.ajax({
+                    url: "{% url 'update_cart' 0 %}".replace(0, cartItemId),
+                    type: 'POST',
+                    data: {
+                        'quantity': newQuantity,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        // Update the total price in the row
+                        var newTotal = (pricePerUnit * newQuantity).toFixed(2);
+                        totalCell.text('₹' + newTotal);
+
+                        // Update cart total
+                        updateCartTotal();
+                    },
+                    error: function (xhr, status, error) {
+                        alert("There was an error updating the cart.");
+                    }
+                });
+            } else {
+                alert("Quantity must be at least 1.");
+            }
+        });
+
+        // Handle item removal
+        $('.remove-item-btn').on('click', function () {
+            var cartItemId = $(this).data('cart-item-id');
+
+            // Update cart item quantity to 0 via AJAX
+            $.ajax({
+                url: "{% url 'update_cart' 0 %}".replace(0, cartItemId),
+                type: 'POST',
+                data: {
+                    'quantity': 0,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    // Remove the item row from the table
+                    $('tr[data-cart-item-id="' + cartItemId + '"]').remove();
+
+                    // Update cart total
+                    updateCartTotal();
+
+                    // Check if cart is empty and display empty message
+                    if ($('.cart-table tbody tr').length === 0) {
+                        $('.cart-table tbody').html('<tr><td colspan="5" class="empty-cart">Your cart is empty.</td></tr>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("There was an error removing the item from the cart.");
+                }
+            });
+        });
+
+        // Calculate and update the cart total
+        function updateCartTotal() {
+            var finalTotal = 0;
+            $('.cart-table tbody tr').each(function () {
+                var rowTotal = parseFloat($(this).find('.product-total').text().replace('₹', ''));
+                finalTotal += rowTotal;
+            });
+            $('#final-total').text('₹' + finalTotal.toFixed(2));
+        }
+
+        // Initial calculation of cart total
+        updateCartTotal();
+
+        // Handle checkout button click
+        $('#checkout-btn').on('click', function () {
+            // Redirect to checkout page
+            window.location.href = "{% url 'checkout' %}";
+        });
+    });
+</script>
+
+{% endblock %}

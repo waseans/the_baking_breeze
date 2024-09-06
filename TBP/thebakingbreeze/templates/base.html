@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}The Baking Breeze{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+    <style>
+        .auth-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .popup-content h2 {
+            margin-top: 0;
+        }
+
+        .popup-content .btn {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+        .btn-secondary {
+            background-color: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="logo">
+        <img src="{% static 'images/Transparent Logo.png' %}" alt="The Baking Breeze Logo" class="logo-img">
+    </div>
+    <div class="top-bar-icons">
+        <span class="icon" id="cart-icon">
+            <a href="#" id="cart-link">
+                <img src="{% static 'images/cart.png' %}" alt="Cart Icon" class="icon-img">
+            </a>
+        </span>
+        
+        <span class="icon" id="profile-icon">
+            <img src="{% static 'images/profile.png' %}" alt="Profile Icon" class="icon-img">
+        </span>
+        <div id="profile-dropdown" class="dropdown-content" style="display: none;">
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}">Profile</a>
+                <a href="{% url 'user_orders' %}">Orders</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+        <span class="icon" id="menu-icon">
+            <img src="{% static 'images/menu.png' %}" alt="Menu Icon" class="icon-img">
+        </span>
+        <div id="menu-dropdown" class="dropdown-content" style="display: none;">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}">Products</a>
+            <a href="{% url 'home' %}">About</a>
+        </div>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="{% url 'home' %}">
+        <button class="nav-btn">Home</button>
+    </a>
+    <a href="{% url 'home' %}#all-products">
+        <button class="nav-btn">Products</button>
+    </a>
+    <a href="{% url 'about_us' %}#testimonials">
+        <button class="nav-btn">About us</button>
+    </a>
+    <a href="{% url 'contact' %}">
+        <button class="nav-btn">Contact</button>
+    </a>
+</nav>
+
+<!-- Page Content -->
+{% block content %}{% endblock %}
+
+<!-- Auth Popup -->
+<div id="auth-popup" class="auth-popup">
+    <div class="popup-content">
+        <h2>Login Required</h2>
+        <p>You need to be logged in to view your cart.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        <button class="btn btn-secondary" onclick="hideAuthPopup()">Cancel</button>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-logo">
+            <img src="{% static 'images/Transparent Logo.png' %}" alt="The Baking Breeze Logo" class="footer-logo-img">
+        </div>
+        <div class="footer-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}#all-products">Products</a>
+            <a href="{% url 'home' %}#testimonials">Testimonials</a>
+            <a href="{% url 'contact' %}">Contact</a>
+        </div>
+        <div class="footer-social-media">
+            <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon facebook" aria-label="Facebook">
+                <img src="{% static 'images/fb.png' %}" alt="Facebook Icon" class="social-icon-img">
+            </a>
+            <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon twitter" aria-label="Twitter">
+                <img src="{% static 'images/tw.png' %}" alt="Twitter Icon" class="social-icon-img">
+            </a>
+            <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon instagram" aria-label="Instagram">
+                <img src="{% static 'images/insta.png' %}" alt="Instagram Icon" class="social-icon-img">
+            </a>
+            <a href="https://wa.me/YourNumber" target="_blank" class="social-icon whatsapp" aria-label="WhatsApp">
+                <img src="{% static 'images/whatsapp.png' %}" alt="WhatsApp Icon" class="social-icon-img">
+            </a>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 The Baking Breeze. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+{% block extra_js %}
+<script src="{% static 'js/slider.js' %}"></script>
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const profileIcon = document.getElementById('profile-icon');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const menuIcon = document.getElementById('menu-icon');
+        const menuDropdown = document.getElementById('menu-dropdown');
+        const cartLink = document.getElementById('cart-link'); // Corrected to match the ID used in HTML
+        const authPopup = document.getElementById('auth-popup');
+        const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}"; // Ensure this outputs correctly
+    
+        if (profileIcon && profileDropdown) {
+            profileIcon.addEventListener('click', function () {
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+                if (menuDropdown) menuDropdown.style.display = 'none'; // Hide menu dropdown if open
+            });
+        }
+    
+        if (menuIcon && menuDropdown) {
+            menuIcon.addEventListener('click', function () {
+                menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+                if (profileDropdown) profileDropdown.style.display = 'none'; // Hide profile dropdown if open
+            });
+        }
+    
+        document.addEventListener('click', function (e) {
+            if (profileDropdown && !profileIcon.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+            if (menuDropdown && !menuIcon.contains(e.target)) {
+                menuDropdown.style.display = 'none';
+            }
+        });
+    
+        // Handle cart link click based on authentication status
+        cartLink.addEventListener('click', function (event) {
+            if (isAuthenticated === 'true') {
+                // If user is authenticated, allow navigation to cart
+                window.location.href = "{% url 'view_cart' %}";
+            } else {
+                // If user is not authenticated, show popup
+                event.preventDefault();
+                authPopup.style.display = 'flex';
+            }
+        });
+    });
+    
+    function hideAuthPopup() {
+        document.getElementById('auth-popup').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

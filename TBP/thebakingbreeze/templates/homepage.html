@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% block title %}Homepage - The Baking Breeze{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="paragraph-container">
+        <img src="{% static 'images/Grayscale Transparent.svg' %}" alt="The Baking Breeze" style="max-width: 100%; height: auto;">
+        <h1>The Baking Breeze Welcomes You!</h1>
+        <p class="main-paragraph">Welcome to our e-commerce website! Discover our amazing range of products and enjoy a seamless shopping experience.</p>
+    </div>
+</section>
+
+<!-- Card Slider -->
+<section class="card-slider">
+    <h1 style="font-family: 'Montserrat', sans-serif;">Our Gallery</h1>
+    <div class="slider-container">
+        {% for product in products %}
+            <div class="card">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            </div>
+        {% endfor %}
+    </div>
+    <button class="slider-button prev" onclick="moveSlide(-1)">&#10094;</button>
+    <button class="slider-button next" onclick="moveSlide(1)">&#10095;</button>
+</section>
+
+<!-- All Products Section -->
+<section class="all-products-section" id="all-products">
+    <h2 style="left: 20%;">All Products</h2>
+    <div class="cards-container">
+        {% for product in products %}
+            <div class="product-card" data-product-id="{{ product.id }}">
+                <a href="{% url 'product_details' product.id %}" class="clickable">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                </a>
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-price">Price/Piece : ₹{{ product.price }}</p>
+                <p class="product-rating">Rating : {{ product.rating }}/5</p>
+                <button class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Auth Popup -->
+<div id="auth-popup" class="auth-popup">
+    <div class="popup-content">
+        <h2>Login Required</h2>
+        <p>You need to be logged in to add items to your cart.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        <button class="btn btn-secondary" onclick="hideAuthPopup()">Cancel</button>
+    </div>
+</div>
+
+<!-- JavaScript for Adding to Cart and Opening Product Details -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        const authPopup = document.getElementById('auth-popup');
+        const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}"; // Ensure this outputs correctly
+
+        addToCartButtons.forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent the default action of the button
+
+                if (isAuthenticated === 'true') {
+                    const productId = button.getAttribute('data-product-id');
+                    
+                    fetch("{% url 'add_to_cart' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: new URLSearchParams({
+                            'product_id': productId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Show success message
+                            alert(data.message);
+                        } else {
+                            // Show error message
+                            alert('Failed to add item to cart.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                } else {
+                    // If user is not authenticated, show popup
+                    authPopup.style.display = 'flex';
+                }
+            });
+        });
+
+        // Ensure clicking on the product image or name opens the product details page
+        const clickableElements = document.querySelectorAll('.clickable');
+
+        clickableElements.forEach(element => {
+            element.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the default anchor behavior
+                const href = this.getAttribute('href'); // Get the href value
+                window.location.href = href; // Redirect to the product details page
+            });
+        });
+    });
+
+    function hideAuthPopup() {
+        document.getElementById('auth-popup').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

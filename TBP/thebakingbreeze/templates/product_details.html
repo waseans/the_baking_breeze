@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}  
+{% block title %}Product Details - The Baking Breeze{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_details.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="product-details">
+    <div class="container">
+        <div class="product-card">
+            <!-- Primary Details -->
+            <div class="product-card-header">
+                <div class="product-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-info">
+                    <h1>{{ product.name }}</h1>
+                    <p class="price"> Price/Piece : ₹{{ product.price }}</p>
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1">
+                    </div>
+                    <button class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Additional Details -->
+            <div class="product-card-body">
+                <h2>Product Details</h2>
+                <p><strong>Material:</strong> {{ product.material }}</p>
+                <p><strong>Dimensions:</strong> {{ product.dimensions }}</p>
+                <p><strong>Weight:</strong> {{ product.weight }}</p>
+                <p><strong>Color:</strong> {{ product.color }}</p>
+                <p><strong>Included Accessories:</strong> {{ product.included_accessories }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Auth Popup -->
+<div id="auth-popup" class="auth-popup">
+    <div class="popup-content">
+        <h2>Login Required</h2>
+        <p>You need to be logged in to add items to your cart.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        <button class="btn btn-secondary" onclick="hideAuthPopup()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addToCartButton = document.querySelector('.add-to-cart-btn');
+        const authPopup = document.getElementById('auth-popup');
+        const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}"; // Ensure this outputs correctly
+
+        addToCartButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default action of the button
+
+            if (isAuthenticated === 'true') {
+                const productId = addToCartButton.getAttribute('data-product-id');
+                const quantity = document.querySelector('#quantity').value;
+
+                fetch("{% url 'add_to_cart' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: new URLSearchParams({
+                        'product_id': productId,
+                        'quantity': quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Show success message
+                        alert(data.message);
+                    } else {
+                        // Show error message
+                        alert('Failed to add item to cart.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                // If user is not authenticated, show popup
+                authPopup.style.display = 'flex';
+            }
+        });
+    });
+
+    function hideAuthPopup() {
+        document.getElementById('auth-popup').style.display = 'none';
+    }
+</script>
+{% endblock %}
